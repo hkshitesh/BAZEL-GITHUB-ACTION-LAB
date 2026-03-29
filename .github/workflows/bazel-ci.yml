@@ -1,65 +1,38 @@
-name: Bazel CI Pipeline new
+name: Bazel CI Pipeline
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
 
-  build-and-test:
+  build:
 
     runs-on: ubuntu-latest
 
     steps:
 
-      # Step 1: Checkout source code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-
-      # Step 2: Install Bazel using Bazelisk
-      - name: Setup Bazel
+      - name: Setup Bazelisk
         uses: bazelbuild/setup-bazelisk@v2
         with:
-          bazelisk-version: latest
+          bazelisk-version: 1.28.1
 
-
-      # Step 3: Cache Bazel build output (speeds up CI builds)
-      - name: Cache Bazel files
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/bazel
-            ~/.bazel
-          key: bazel-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            bazel-${{ runner.os }}-
-
-
-      # Step 4: Show Bazel version
-      - name: Check Bazel version
+      - name: Show Bazel Version
         run: bazel version
 
+      - name: Build Project
+        run: bazel build //...
 
-      # Step 5: Build the project
-      - name: Build with Bazel
-        run: |
-          bazel build //...
+      - name: Run Tests
+        run: bazel test //...
 
-
-      # Step 6: Run all tests
-      - name: Run Bazel Tests
-        run: |
-          bazel test //...
-
-
-      # Step 7: Upload build artifact
-      - name: Upload build artifact
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: bazel-build-artifacts
+          name: bazel-artifacts
           path: bazel-bin
