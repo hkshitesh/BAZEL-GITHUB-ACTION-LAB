@@ -1,12 +1,12 @@
-name: Bazel CI Pipeline
+name: Bazel CI Pipeline new
 
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
 
